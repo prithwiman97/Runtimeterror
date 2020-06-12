@@ -1,2 +1,2 @@
 # Runtimeterror
-Smart Dustibin Monitoring System
+Smart Dustbin Monitoring System
