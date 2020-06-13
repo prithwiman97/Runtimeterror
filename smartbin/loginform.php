@@ -13,7 +13,7 @@
 			<div class="row col-sm-12 justify-content-center m-3">
 				<div class="col-sm-3">Email : </div>
 				<div class="col-sm-8">
-					<input type="text" name="email" class="form-control">
+					<input type="email" name="email" class="form-control">
 				</div>
 			</div>
 			<div class="row col-sm-12 justify-content-center m-3">
