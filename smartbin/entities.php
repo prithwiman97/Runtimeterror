@@ -24,7 +24,7 @@
             $lng=$this->longitude;
             $link=mysqli_connect("localhost","root","");
             mysqli_select_db($link,"smartbin")or die(mysqli_error($link));
-            $ins="INSERT INTO location VALUES($id,'$name',$lat,$lng)";
+            $ins="INSERT INTO location (name,latitude,longitude) VALUES('$name',$lat,$lng)";
             $err=mysqli_query($link,$ins)or die(mysqli_error($link));
             return $err;
         }

@@ -14,15 +14,15 @@
     <div class="row">
         <div class="col-3">
             Name:
-            <input type="text" name="bid" class="form-control" pattern="[A-Za-z 0-9.]+">
+            <input type="text" name="name" class="form-control" pattern="[A-Za-z 0-9.]+" required>
         </div>
         <div class="col-3">
             Latitude:
-            <input type="number" name="bid" class="form-control" step=0.00001 min=0>
+            <input type="number" name="lat" class="form-control" step=0.00001 min=-90 max=90 required>
         </div>
         <div class="col-3">
             Longitude:
-            <input type="number" name="bid" class="form-control" step=0.00001 min=0>
+            <input type="number" name="lng" class="form-control" step=0.00001 min=-180 max=180 required>
         </div>
         <div class="col-3 mt-4">
             <input type="submit" name="addloc" class="btn btn-primary" value="Add Location">
