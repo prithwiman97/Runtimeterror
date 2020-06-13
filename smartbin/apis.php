@@ -36,10 +36,10 @@
             $fname=$bid."_".time().$file['name'];
             $path="./img/".$fname;
             $date=date("Y-m-d");
-            if(move_uploaded_file($file['tmp_name'],$path))
+            $insert="INSERT INTO report VALUES($bid,'$path','$date','')";
+            if(mysqli_query($link,$insert)or die(mysqli_error($link)))
             {
-                $insert="INSERT INTO report VALUES($bid,'$path','$date')";
-                return mysqli_query($link,$insert)or die(mysqli_error($link));
+                return move_uploaded_file($file['tmp_name'],$path);
             }
         }
     }

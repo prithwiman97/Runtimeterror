@@ -102,6 +102,24 @@ setInterval(function () { updateChart(); }, 500);
 
 }
 </script>
+<?php
+					if(!empty($_SESSION['worker']))
+					{
+					?>
+						<div class="row container-fluid ml-5 mt-2 col-6 text-white">
+						<h4>Welcome: <?php echo $_SESSION['worker']['email'];?></h4>
+						</div>
+					<?php
+					}
+					else if(!empty($_SESSION['admin']))
+					{
+					?>
+						<div class="row container-fluid ml-5 mt-2 col-6 text-white">
+						<h4>Welcome: <?php echo $_SESSION['admin']['email'];?></h4>
+						</div>
+					<?php
+					}
+					?>
 		<div class="container-fluid col-sm-8 mt-5">
 			<div class="tab-content col-sm-12">
 				<div id="view_status" class="tab-pane active">
@@ -117,16 +135,6 @@ setInterval(function () { updateChart(); }, 500);
 							window.location.reload();
 						});
 					</script>
-					<?php
-					if(!empty($_SESSION['worker']))
-					{
-					?>
-						<div class="row container-fluid">
-						<h1>Worker Here</h1>
-						</div>
-					<?php
-					}
-					?>
 				</div>
 				<div id="view_report" class="tab-pane fade">
 					<div class="row text-white-50">
@@ -135,7 +143,7 @@ setInterval(function () { updateChart(); }, 500);
 					<div class="row container-fluid text-light">
 						<h4>Approve Report</h4>
 						<?php
-						$select="SELECT b.bid,l.name,r.path FROM bin b JOIN report r JOIN location l ON b.bid=r.bid AND b.locid=l.locid";
+						$select="SELECT b.bid,l.name,r.path,r.approval FROM bin b JOIN report r JOIN location l ON b.bid=r.bid AND b.locid=l.locid";
 						$rs=mysqli_query($link,$select)or die(mysqli_error($link));
 						if(mysqli_num_rows($rs)>0)
 						{
@@ -156,12 +164,37 @@ setInterval(function () { updateChart(); }, 500);
 									<td><?php echo $row['bid'];?></td>
 									<td><?php echo $row['name'];?></td>
 									<td><button id="<?php echo $row['bid'];?>view" class="btn btn-info" data-toggle="modal" data-target="#report">View Image</button></td>
-									<td><button id="<?php echo $row['bid'];?>appr" class="btn btn-primary">Approve</button></td>
+									<td id="<?php echo $row['bid'];?>approval">
+										<?php
+										if($row['approval']!="APPROVED")
+										{
+										?>
+											<button id="<?php echo $row['bid'];?>appr" class="btn btn-primary">Approve</button>
+										<?php
+										}
+										else echo $row['approval'];
+										?>
+									</td>
 								</tr>
 								<script>
 									$("#<?php echo $row['bid'];?>view").click(function(){
 										$("#mhead").html("Proof");
 										$("#mbody").html("<img src='<?php echo $row['path'];?>'>");
+									});
+									$("#<?php echo $row['bid'];?>appr").click(function(){
+										var xhttp=new XMLHttpRequest();
+										xhttp.onreadystatechange=function(){
+											if(this.readyState==4 && this.status==200)
+											{
+												if(this.responseText=='1')
+												{
+													alert("Report Approved");
+													$("#<?php echo $row['bid'];?>approval").html("APPROVED");
+												}
+											}
+										};
+										xhttp.open("GET","approvereport.php?id=<?php echo $row['bid'];?>",true);
+										xhttp.send();
 									});
 								</script>
 							<?php
@@ -184,7 +217,20 @@ setInterval(function () { updateChart(); }, 500);
 						<div class="row col-sm-12"><h4>Upload Report</h4></div>
 						<div class="row col-sm-9 m-2">
 							<div class="col-sm-2 p-2">
-								Bin ID: <input type="number" min=1 name="bid" class="form-control" onblur="checkBinId(this.value)">
+								Bin ID: 
+								<select name="bid" class="form-control" onblur="checkBinId(this.value)">
+									<option id="dflt_opt" value="" selected>-Select-</option>
+								<?php
+									$select="SELECT bid FROM bin";
+									$rs=mysqli_query($link,$select)or die(mysqli_error($link));
+									while($row=mysqli_fetch_assoc($rs))
+									{
+								?>
+										<option value="<?php echo $row['bid'];?>"><?php echo $row['bid'];?></option>
+								<?php
+									}
+								?>
+								</select>
 							</div>
 							<div class="col-sm-6 p-2">
 								Image:
@@ -214,7 +260,7 @@ setInterval(function () { updateChart(); }, 500);
 										if(this.responseText=="Found")
 										{
 											alert("Cannot upload report for bin that has not been approved.\nContact Administrator");
-											$("input[name='bid']").val(null);
+											$("#dflt_opt").prop('selected',true);
 										}
 									}
 								};
@@ -226,7 +272,7 @@ setInterval(function () { updateChart(); }, 500);
 								file=f;
 							}
 							$("input[name='upload']").click(function(){
-								var bid=$("input[name='bid']").val();
+								var bid=$("select[name='bid']").val();
 								if(bid=="")
 								{
 									alert("Please Enter a Bin Id");
