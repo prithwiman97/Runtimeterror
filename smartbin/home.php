@@ -221,7 +221,7 @@ setInterval(function () { updateChart(); }, 500);
 								<select name="bid" class="form-control" onblur="checkBinId(this.value)">
 									<option id="dflt_opt" value="" selected>-Select-</option>
 								<?php
-									$select="SELECT bid FROM bin";
+									$select="SELECT bid FROM bin WHERE status>80";
 									$rs=mysqli_query($link,$select)or die(mysqli_error($link));
 									while($row=mysqli_fetch_assoc($rs))
 									{
